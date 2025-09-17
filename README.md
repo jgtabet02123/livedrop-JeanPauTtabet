@@ -23,7 +23,7 @@
 
 - Clients must pass this cursor into the next request to fetch subsequent pages.
 
-This ensures stable and deterministic results, even if new records are added or old ones are deleted during pagination (important for large follower lists or live updates).
+This ensures stable and deterministic results, even if new records are added or old ones are deleted during pagination.
 #### 3. Microservices Architecture
 The system decomposes functionality into specialized services:
 
