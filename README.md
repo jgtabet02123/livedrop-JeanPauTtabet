@@ -1,6 +1,6 @@
 ## System Architecture Overview
 ### Design
-https://excalidraw.com/#json=6eTyIoPxZGizmH7NwBDoL,QccDsvQLxCB9UMT39pRrhw
+[https://excalidraw.com/#json=6eTyIoPxZGizmH7NwBDoL,QccDsvQLxCB9UMT39pRrhw](https://excalidraw.com/#json=_HX9tzXp8YofTjQJglJf-,ZfKy7f6L74N8Ct-hrMQRDg)
 
 ### Core Components
 
@@ -13,7 +13,17 @@ https://excalidraw.com/#json=6eTyIoPxZGizmH7NwBDoL,QccDsvQLxCB9UMT39pRrhw
 - **Rate Limiter**: Protects backend services from excessive traffic and DDoS attacks
 - **Authentication**: Handles user authorization before forwarding requests to internal services
 - **API Composition**: Aggregates data from multiple services to reduce client-side network calls
+#### Pagination strategy
 
+- All list APIs use cursor-based pagination instead of offset-based.
+
+- Requests take limit and an optional cursor.
+
+- Responses include a nextCursor if more results are available.
+
+- Clients must pass this cursor into the next request to fetch subsequent pages.
+
+This ensures stable and deterministic results, even if new records are added or old ones are deleted during pagination (important for large follower lists or live updates).
 #### 3. Microservices Architecture
 The system decomposes functionality into specialized services:
 
