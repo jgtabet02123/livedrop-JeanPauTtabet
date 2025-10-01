@@ -30,7 +30,7 @@ def generate_response(user_input):
 
 
 def chat_with_model():
-    console.print(Panel("[bold cyan]Shoplite Assistant[/] (type 'exit' to quit)", expand=False))
+    print(Panel("[bold cyan]Shoplite Assistant[/] (type 'exit' to quit)", expand=False))
 
     while True:
         user_input = console.input("[bold green]You:[/] ")
