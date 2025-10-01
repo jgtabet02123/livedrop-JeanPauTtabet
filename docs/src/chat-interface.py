@@ -35,7 +35,7 @@ def chat_with_model():
     while True:
         user_input = console.input("[bold green]You:[/] ")
         if user_input.lower() in ["exit", "quit", "bye"]:
-            console.print("[bold cyan]Assistant:[/] Goodbye!")
+           print("[bold cyan]Assistant:[/] Goodbye!")
             break
 
         try:
@@ -44,11 +44,11 @@ def chat_with_model():
             sources = response.get("sources", [])
 
             
-            console.print(Markdown(f"**Assistant:** {answer}"))
+            print(Markdown(f"**Assistant:** {answer}"))
 
             if sources:
-                console.print(Panel(f"Sources: {', '.join(sources)}", style="cyan"))
+                print(Panel(f"Sources: {', '.join(sources)}", style="cyan"))
         except Exception as e:
-            console.print(f"[red] Error:[/] {str(e)}")
+           print(f"[red] Error:[/] {str(e)}")
 
 chat_with_model()
