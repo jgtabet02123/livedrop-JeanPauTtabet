@@ -1,24 +1,22 @@
+# source.py
+import requests
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.panel import Panel
 
-import requests
+console = Console()
 
-API_URL = "http://127.0.0.1:5000/get_response"  #
-
-import requests
-
-PUBLIC_URL = "https://collectedly-intercuspidal-allegra.ngrok-free.dev"  # replace with printed URL
-CHAT_ENDPOINT = f"{PUBLIC_URL}/chat"
-
-def generate_response(user_input):
+def generate_response(api_url, user_input):
+    """
+    Send user input to the RAG API and get answer + sources.
+    """
     payload = {
         "query": user_input,
         "prompt_key": "base_retrieval_prompt",
         "top_k": 3
     }
     try:
-        r = requests.post(CHAT_ENDPOINT, json=payload)
+        r = requests.post(f"{api_url}/chat", json=payload)
         r.raise_for_status()
         data = r.json()
         return {
@@ -28,27 +26,39 @@ def generate_response(user_input):
     except Exception as e:
         return {"answer": f"Error contacting API: {str(e)}", "sources": []}
 
+def start_chat():
+    """
+    Terminal chat interface. Prompts user for API URL each time.
+    """
+    api_url = console.input("[bold yellow]Enter your ngrok or API URL : [/]").strip()
+    if not api_url:
+        console.print("[red]No URL entered. Exiting.[/]")
+        return
 
-def chat_with_model():
-    print(Panel("[bold cyan]Shoplite Assistant[/] (type 'exit' to quit)", expand=False))
+    # Test connection
+    try:
+        health = requests.get(f"{api_url}/health").json()
+        if health.get("status") != "healthy":
+            console.print(f"[red]API returned unexpected health status: {health}[/]")
+            return
+        console.print(f"[green]Connected to API successfully![/]")
+    except Exception as e:
+        console.print(f"[red]Failed to connect to API: {e}[/]")
+        return
+
+    console.print(Panel("[bold cyan]Shoplite Assistant[/] (type 'exit' to quit)", expand=False))
 
     while True:
         user_input = console.input("[bold green]You:[/] ")
         if user_input.lower() in ["exit", "quit", "bye"]:
-           print("[bold cyan]Assistant:[/] Goodbye!")
+            console.print("[bold cyan]Assistant:[/] Goodbye!")
             break
 
-        try:
-            response = generate_response(user_input)
-            answer = response.get("answer", "No answer generated.")
-            sources = response.get("sources", [])
+        response = generate_response(api_url, user_input)
+        console.print(Markdown(f"**Assistant:** {response['answer']}"))
 
-            
-            print(Markdown(f"**Assistant:** {answer}"))
+        if response["sources"]:
+            console.print(Panel(f"Sources: {', '.join(response['sources'])}", style="cyan"))
 
-            if sources:
-                print(Panel(f"Sources: {', '.join(sources)}", style="cyan"))
-        except Exception as e:
-           print(f"[red] Error:[/] {str(e)}")
-
-chat_with_model()
+if __name__ == "__main__":
+    start_chat()
